@@ -29,8 +29,8 @@ Docs: open with no query string, or `?help=1`.
 No browser needed. Requires Node.js ≥ 18.
 
 ```bash
-git clone https://git.souls-like.com/fj-lotusfa/simp_trad.git
-cd simp_trad
+git clone https://github.com/lotusfa/Simp-Trad.git
+cd Simp-Trad
 node cli.mjs --s2t --locale hk "软件"
 ./cli.sh --s2t --locale hk "软件"  # same, via bash wrapper
 echo "软件" | node cli.mjs --s2t -l tw

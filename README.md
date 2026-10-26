@@ -1,5 +1,6 @@
 # 簡繁轉換 (simp_trad)
 
+Repository: [https://github.com/lotusfa/Simp-Trad](https://github.com/lotusfa/Simp-Trad)
 Offline Simplified ↔ Traditional Chinese converter for [toolbox.lotusfa.com](https://toolbox.lotusfa.com/).
 
 Pure client-side JS. UI matches the IPA / toolbox theme (`../ipa/css/styles.css`).
