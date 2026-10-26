@@ -142,10 +142,19 @@
       const localeRow = document.getElementById('localeRow');
       let converter = null;
       let debounceTimer = null;
+      let lastDirection = null;
+
+      const SAMPLE_S2T = '这是一个在浏览器本地运行的简繁转换工具，无需联网即可使用。它基于 OpenCC 词典，支持简体与繁体互转，并可选择台湾或香港用语。请在此输入或粘贴要转换的文字。';
+      const SAMPLE_T2S = '這是一個在瀏覽器本地運行的簡繁轉換工具，無需聯網即可使用。它基於 OpenCC 詞典，支持簡體與繁體互轉，並可選擇台灣或香港用語。請在此輸入或貼上要轉換的文字。';
 
       function selected(name) {
         const el = document.querySelector(`input[name="${name}"]:checked`);
         return el ? el.value : null;
+      }
+
+      function isSampleText(value) {
+        const v = (value || '').trim();
+        return v === SAMPLE_S2T || v === SAMPLE_T2S;
       }
 
       function rebuildConverter() {
@@ -162,6 +171,10 @@
           const fromKey = from === 'twp' ? 'twp' : from === 'tw' ? 'tw' : from === 'hk' ? 'hk' : 't';
           converter = OpenCC.Converter({ from: fromKey, to: 'cn' });
         }
+        if (lastDirection !== null && lastDirection !== direction && isSampleText(inputText.value)) {
+          inputText.value = direction === 's2t' ? SAMPLE_S2T : SAMPLE_T2S;
+        }
+        lastDirection = direction;
         convertNow();
       }
 
