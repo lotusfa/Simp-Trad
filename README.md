@@ -25,3 +25,7 @@ python3 -m http.server 8765
 ```
 
 Open http://127.0.0.1:8765/simp_trad/
+
+## Agent / CLI
+
+Static agent endpoint: [`agent.html`](./agent.html) — same OpenCC bundle, URL query params. See [`SKILL.md`](./SKILL.md).

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<!--
+  Static 簡繁 agent endpoint. Humans: open with no params for docs.
+  Agents/CLI: open with ?direction=&input= in a JS browser; read #output[data-status].
+  Plain curl/HTTP without JS will not convert. See SKILL.md.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="簡繁轉換 agent endpoint (static OpenCC). Requires a JavaScript browser. Agents: read pre#output[data-status].">
+  <title>Agent Interface | 簡繁轉換</title>
+  <link rel="stylesheet" href="./css/agent.css">
+</head>
+<body>
+  <div id="app">
+    <noscript>This page requires JavaScript. Use a browser or browser-driven agent/CLI — plain HTTP fetch will not convert text.</noscript>
+  </div>
+  <script src="./js/agent.js" type="module"></script>
+</body>
+</html>

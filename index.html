@@ -14,6 +14,37 @@
       gtag('js', new Date());
       gtag('config', 'G-X1Z1DMD4J9');
     </script>
+    <style>
+      .file-upload-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .btn-file-upload, .btn-file-download {
+        display: inline-block;
+        padding: 6px 14px;
+        font-size: var(--font-sm);
+        font-weight: 500;
+        border: 1px solid var(--color-btn-border);
+        background: var(--color-btn-bg);
+        color: var(--color-text);
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn-file-upload:hover, .btn-file-download:hover {
+        background: var(--color-btn-hover);
+      }
+      .btn-file-download:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .file-name {
+        font-size: var(--font-sm);
+        color: var(--color-text-muted);
+      }
+    </style>
   </head>
   <body>
     <div class="header">
@@ -32,6 +63,11 @@
         <div class="form-group">
           <label for="inputText">輸入</label>
           <textarea id="inputText" rows="10">这是一个在浏览器本地运行的简繁转换工具，无需联网即可使用。它基于 OpenCC 词典，支持简体与繁体互转，并可选择台湾或香港用语。请在此输入或粘贴要转换的文字。</textarea>
+          <div class="file-upload-row">
+            <label for="inputFile" class="btn-file-upload">Upload .txt / .md / .epub</label>
+            <input type="file" id="inputFile" accept=".txt,.text,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.log,.srt,.vtt,.epub,text/plain,application/epub+zip" style="display:none">
+            <span id="fileName" class="file-name"></span>
+          </div>
         </div>
       </div>
 
@@ -44,9 +80,14 @@
             </div>
           </div>
           <textarea id="outputText" rows="10" disabled></textarea>
+          <div class="file-upload-row">
+            <button type="button" id="downloadBtn" class="btn-file-download" disabled>Download file</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <p class="hint" style="font-size: var(--font-xs); color: var(--color-text-light); margin: 8px 0;">Supports .txt / .md / .csv / .html and .epub (converted inside the book; download keeps EPUB).</p>
 
     <div class="row">
       <div class="col-md-6">
@@ -116,9 +157,14 @@
       </div>
     </footer>
 
+    <script src="./lib/jszip.min.js"></script>
     <script type="module">
       import { svgLightMode, svgDarkMode, svgCopy, svgTick } from '../ipa/js/svg.js';
       import OpenCC from './lib/opencc-full.js';
+      import {
+        isEpubFile, isSupportedTextFile, suggestedDownloadName,
+        convertMarkupPreservingTags, convertEpub, readPlainFile, fileExt,
+      } from './js/file-convert.js';
 
       const toggle = document.getElementById('dark-mode-toggle');
       const iconSpan = toggle.querySelector('.icon');
@@ -175,6 +221,22 @@
           inputText.value = direction === 's2t' ? SAMPLE_S2T : SAMPLE_T2S;
         }
         lastDirection = direction;
+        if (lastEpubBuf && typeof JSZip !== 'undefined') {
+          convertEpub(lastEpubBuf, converter, JSZip).then(({ blob, previewText, fileCount }) => {
+            inputText.value = previewText || inputText.value;
+            outputText.value = inputText.value;
+            downloadPayload = {
+              kind: 'epub',
+              blob,
+              name: suggestedDownloadName(lastEpubName || 'book.epub', direction, 'epub'),
+            };
+            fileNameSpan.textContent = `${lastEpubName} → ${downloadPayload.name} (${fileCount} files)`;
+            updateDownloadState();
+          }).catch((e) => {
+            outputText.value = 'Error: ' + e.message;
+          });
+          return;
+        }
         convertNow();
       }
 
@@ -207,6 +269,132 @@
           copyBtn.innerHTML = svgTick;
           setTimeout(() => { copyBtn.innerHTML = svgCopy; }, 1500);
         });
+      });
+
+
+      const fileInput = document.getElementById('inputFile');
+      const fileNameSpan = document.getElementById('fileName');
+      const downloadBtn = document.getElementById('downloadBtn');
+      let downloadPayload = null; // { blob, name, kind }
+      let lastEpubBuf = null;
+      let lastEpubName = '';
+
+      function updateDownloadState() {
+        downloadBtn.disabled = !(downloadPayload || outputText.value);
+      }
+
+      const _convertNow = convertNow;
+      convertNow = function () {
+        // Text-only reconvert clears EPUB payload unless we keep a raw source mode
+        if (downloadPayload && downloadPayload.kind === 'epub') {
+          // keep epub until new upload; textarea preview still updates from text path only
+        } else {
+          downloadPayload = null;
+        }
+        _convertNow();
+        if (!downloadPayload && outputText.value) {
+          const direction = selected('direction') || 's2t';
+          downloadPayload = {
+            kind: 'text',
+            blob: new Blob([outputText.value], { type: 'text/plain;charset=utf-8' }),
+            name: suggestedDownloadName('converted.txt', direction, 'txt'),
+          };
+        }
+        updateDownloadState();
+      };
+
+      async function handleFile(file) {
+        const direction = selected('direction') || 's2t';
+        fileNameSpan.textContent = file.name + '…';
+        downloadPayload = null;
+        updateDownloadState();
+
+        if (isEpubFile(file)) {
+          if (typeof JSZip === 'undefined') {
+            fileNameSpan.textContent = 'JSZip missing';
+            return;
+          }
+          try {
+            const buf = await file.arrayBuffer();
+            lastEpubBuf = buf;
+            lastEpubName = file.name;
+            const { blob, previewText, fileCount } = await convertEpub(buf, converter, JSZip);
+            inputText.value = previewText
+              ? previewText
+              : '(EPUB converted — preview empty; use Download file for the .epub)';
+            outputText.value = inputText.value;
+            downloadPayload = {
+              kind: 'epub',
+              blob,
+              name: suggestedDownloadName(file.name, direction, 'epub'),
+            };
+            fileNameSpan.textContent = `${file.name} → ${downloadPayload.name} (${fileCount} files)`;
+            updateDownloadState();
+          } catch (e) {
+            fileNameSpan.textContent = 'EPUB failed: ' + e.message;
+            outputText.value = 'Error: ' + e.message;
+          }
+          return;
+        }
+
+        if (!isSupportedTextFile(file) && !fileExt(file.name)) {
+          // still try as text
+        }
+
+        try {
+          lastEpubBuf = null;
+          lastEpubName = '';
+          let raw = await readPlainFile(file);
+          const ext = fileExt(file.name);
+          if (ext === 'html' || ext === 'htm' || ext === 'xml') {
+            // keep markup in the box; convert preserving tags for download fidelity
+            const converted = convertMarkupPreservingTags(raw, converter);
+            inputText.value = raw;
+            outputText.value = converted;
+            downloadPayload = {
+              kind: 'text',
+              blob: new Blob([converted], { type: 'text/plain;charset=utf-8' }),
+              name: suggestedDownloadName(file.name, direction, ext || 'txt'),
+            };
+          } else {
+            inputText.value = raw;
+            convertNow();
+            downloadPayload = {
+              kind: 'text',
+              blob: new Blob([outputText.value], { type: 'text/plain;charset=utf-8' }),
+              name: suggestedDownloadName(file.name, direction, ext || 'txt'),
+            };
+          }
+          fileNameSpan.textContent = `${file.name} → ${downloadPayload.name}`;
+          updateDownloadState();
+        } catch (e) {
+          fileNameSpan.textContent = 'Read failed: ' + e.message;
+        }
+      }
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        handleFile(file);
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        let payload = downloadPayload;
+        if (!payload && outputText.value) {
+          payload = {
+            blob: new Blob([outputText.value], { type: 'text/plain;charset=utf-8' }),
+            name: suggestedDownloadName('converted.txt', selected('direction') || 's2t', 'txt'),
+          };
+        }
+        if (!payload) return;
+        const url = URL.createObjectURL(payload.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = payload.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
       });
 
       rebuildConverter();
