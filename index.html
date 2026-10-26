@@ -109,6 +109,17 @@
     .file-item-actions {
       margin-top: 8px; display: flex; gap: 8px; align-items: center;
     }
+    .file-convert-summary {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-sm);
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+    .file-convert-summary strong { font-weight: 600; }
     .file-name-line {
       font-size: var(--font-xs); color: var(--color-text-light);
       margin-top: 6px; min-height: 1.2em;
@@ -197,6 +208,7 @@
           <h3 id="fileModalTitle">文件</h3>
           <button type="button" id="fileModalClose" class="btn-icon" aria-label="Close"></button>
         </div>
+        <p id="fileConvertSummary" class="file-convert-summary" aria-live="polite"></p>
         <div id="fileDropzone" class="file-dropzone" tabindex="0">
           <p class="dz-title">將檔案拖入呢度</p>
           <p>或撳呢度選擇檔案</p>

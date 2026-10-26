@@ -27,6 +27,7 @@ export function initFileUI({
   const fileInput = document.getElementById('inputFile');
   const fileListEl = document.getElementById('fileList');
   const fileNameSpan = document.getElementById('fileName');
+  const fileConvertSummary = document.getElementById('fileConvertSummary');
 
   const svgClose = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
   const svgOpen = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>`;
@@ -48,7 +49,33 @@ export function initFileUI({
     downloadBtn.disabled = !(job && job.status === 'done' && job.blob) && !outputText.value;
   }
 
+
+  const DIR_LABEL = { s2t: '簡 → 繁', t2s: '繁 → 簡' };
+  const LOCALE_LABEL = {
+    t: 'OpenCC',
+    tw: '台灣',
+    twp: '台灣（常用詞）',
+    hk: '香港',
+  };
+
+  function describeConvert() {
+    const direction = selected('direction') || 's2t';
+    const locale = selected('locale') || 't';
+    const dirLabel = DIR_LABEL[direction] || direction;
+    const locLabel = LOCALE_LABEL[locale] || locale;
+    if (direction === 's2t') {
+      return `將會點樣轉：<strong>${dirLabel}</strong> · 繁體變體 <strong>${locLabel}</strong>（根據上一頁選項）`;
+    }
+    return `將會點樣轉：<strong>${dirLabel}</strong> · 來源變體 <strong>${locLabel}</strong>（根據上一頁選項）`;
+  }
+
+  function refreshConvertSummary() {
+    if (!fileConvertSummary) return;
+    fileConvertSummary.innerHTML = describeConvert();
+  }
+
   function openModal() {
+    refreshConvertSummary();
     fileModal.hidden = false;
     fileModal.classList.add('open');
   }
@@ -58,6 +85,11 @@ export function initFileUI({
   }
 
   filesBtn.addEventListener('click', openModal);
+  document.querySelectorAll('input[name="direction"], input[name="locale"]').forEach((el) => {
+    el.addEventListener('change', () => {
+      if (fileModal.classList.contains('open')) refreshConvertSummary();
+    });
+  });
   fileModalClose.addEventListener('click', closeModal);
   fileModal.addEventListener('click', (e) => {
     if (e.target === fileModal) closeModal();
