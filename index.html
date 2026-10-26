@@ -25,6 +25,30 @@
         color: var(--color-text-muted);
         margin-right: 4px;
       }
+      .examples {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0 12px;
+      }
+      .examples-label {
+        font-size: var(--font-sm);
+        color: var(--color-text-muted);
+        margin-right: 4px;
+      }
+      .example-chip {
+        padding: 4px 10px;
+        font-size: var(--font-xs);
+        border: 1px solid var(--color-btn-border);
+        background: var(--color-btn-bg);
+        color: var(--color-text);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+      }
+      .example-chip:hover {
+        background: var(--color-btn-hover);
+      }
       .hint {
         font-size: var(--font-xs);
         color: var(--color-text-light);
@@ -57,6 +81,15 @@
         <label class="form-check-inline"><input type="radio" name="locale" value="twp" /> 台灣（常用詞）</label>
         <label class="form-check-inline"><input type="radio" name="locale" value="hk" /> 香港</label>
       </div>
+    </div>
+
+    <div class="examples" id="examples">
+      <span class="examples-label">Examples</span>
+      <button type="button" class="example-chip" data-text="汉字简化方案公布后，软件与网络用语迅速普及。">漢字／软件</button>
+      <button type="button" class="example-chip" data-text="打开鼠标设置，连接无线网络后启动服务器。">鼠标／网络</button>
+      <button type="button" class="example-chip" data-text="这个视频很火，里面有很多干货分享。">视频／干货</button>
+      <button type="button" class="example-chip" data-text="请在后台配置数据库，并检查内存与磁盘空间。">后台／数据库</button>
+      <button type="button" class="example-chip" data-text="皇后大道中有間舖頭賣軟件同滑鼠。">繁→簡試用</button>
     </div>
 
     <div class="row">
@@ -190,6 +223,24 @@
         navigator.clipboard.writeText(text).then(() => {
           copyBtn.innerHTML = svgTick;
           setTimeout(() => { copyBtn.innerHTML = svgCopy; }, 1500);
+        });
+      });
+
+
+      document.querySelectorAll('.example-chip').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const sample = btn.getAttribute('data-text') || '';
+          inputText.value = sample;
+          // Prefer S→T for simplified samples; T→S for the traditional one
+          const isTradSample = sample.includes('皇后') || sample.includes('舖頭');
+          const dir = isTradSample ? 't2s' : 's2t';
+          const dirInput = document.querySelector(`input[name="direction"][value="${dir}"]`);
+          if (dirInput) {
+            dirInput.checked = true;
+            rebuildConverter();
+          } else {
+            convertNow();
+          }
         });
       });
 
