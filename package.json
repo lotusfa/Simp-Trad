@@ -1,0 +1,22 @@
+{
+  "name": "simp-trad",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline Simplified ↔ Traditional Chinese (OpenCC) — static site + CLI",
+  "type": "module",
+  "bin": {
+    "simp-trad": "./cli.mjs"
+  },
+  "files": [
+    "cli.mjs",
+    "lib/opencc-full.js",
+    "lib/OPENCC-JS-LICENSE",
+    "js/",
+    "agent.html",
+    "index.html",
+    "SKILL.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

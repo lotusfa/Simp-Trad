@@ -23,6 +23,24 @@ Static-hosted OpenCC converter. Humans use `index.html`; **agents and CLI tools*
 
 Docs: open with no query string, or `?help=1`.
 
+
+## Local CLI (clone / submodule)
+
+No browser needed. Requires Node.js ≥ 18.
+
+```bash
+git clone https://git.souls-like.com/fj-lotusfa/simp_trad.git
+cd simp_trad
+node cli.mjs --s2t --locale hk "软件"
+echo "软件" | node cli.mjs --s2t -l tw
+node cli.mjs --t2s -i in.txt -o out.txt
+# optional: npm link  →  simp-trad --s2t 软件
+```
+
+Flags: `--s2t` / `--t2s` (or `-d`), `--locale` / `-l` (`t`|`tw`|`twp`|`hk`), `-i` / `-o`.
+
+Agents that can run shell on a checkout should prefer this CLI over `agent.html`.
+
 ## Base URL
 
 [https://toolbox.lotusfa.com/simp_trad/agent.html](https://toolbox.lotusfa.com/simp_trad/agent.html)
