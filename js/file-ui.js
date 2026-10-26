@@ -3,11 +3,14 @@
  */
 import {
   isEpubFile,
+  isRejectedBinaryFile,
+  isSupportedTextFile,
   suggestedDownloadName,
   convertMarkupPreservingTags,
   convertEpub,
   readPlainFile,
   fileExt,
+  mimeForExt,
 } from './file-convert.js';
 
 export function initFileUI({
@@ -199,21 +202,25 @@ export function initFileUI({
         job.downloadName = suggestedDownloadName(job.name, direction, 'epub');
         setProgress(job, 100, `完成 · ${fileCount} 個檔`, 'done');
       } else {
+        if (isRejectedBinaryFile(job.file)) {
+          throw new Error('唔支援呢個格式（二進制檔）；請用 .txt / .srt / .csv / .md / .epub 等文字檔');
+        }
         setProgress(job, 25, '讀取中…');
         const raw = await readPlainFile(job.file);
         const ext = fileExt(job.name);
         setProgress(job, 60, '轉換中…');
         let converted;
-        if (ext === 'html' || ext === 'htm' || ext === 'xml' || ext === 'xhtml') {
+        if (ext === 'html' || ext === 'htm' || ext === 'xml' || ext === 'xhtml' || ext === 'svg') {
           converted = convertMarkupPreservingTags(raw, conv);
         } else {
           converted = conv(raw);
         }
         job.preview = converted;
-        job.blob = new Blob([converted], { type: 'text/plain;charset=utf-8' });
+        job.blob = new Blob([converted], { type: mimeForExt(ext) });
         job.kind = 'text';
         job.downloadName = suggestedDownloadName(job.name, direction, ext || 'txt');
-        setProgress(job, 100, '完成', 'done');
+        const note = (isSupportedTextFile(job.file) || !ext) ? '完成' : '完成（當純文字處理）';
+        setProgress(job, 100, note, 'done');
       }
       job.status = 'done';
       job.row.querySelector('.file-item-actions').hidden = false;

@@ -213,8 +213,8 @@
           <p class="dz-title">將檔案拖入呢度</p>
           <p>或撳呢度選擇檔案</p>
         </div>
-        <p class="file-support">Supports .txt / .md / .csv / .html and .epub (converted inside the book; download keeps EPUB). 可以一次過多個檔。</p>
-        <input type="file" id="inputFile" accept=".txt,.text,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.log,.srt,.vtt,.epub,text/plain,application/epub+zip" multiple hidden>
+        <p class="file-support">支援純文字同 text-based 檔：<strong>.txt</strong> / <strong>.md</strong> / <strong>.csv</strong> / <strong>.tsv</strong> / <strong>.srt</strong> / <strong>.vtt</strong> / <strong>.ass</strong> / <strong>.json</strong> / <strong>.yaml</strong> / <strong>.html</strong> / <strong>.xml</strong> / 同埋常見 code、log、字幕、設定檔。亦支援 <strong>.epub</strong>（書內轉換，下載仍係 EPUB）。可以一次過多個檔。唔支援 Word/PDF/圖片等二進制格式。</p>
+        <input type="file" id="inputFile" accept=".txt,.text,.md,.markdown,.rst,.csv,.tsv,.json,.jsonl,.yaml,.yml,.toml,.ini,.cfg,.conf,.html,.htm,.xhtml,.xml,.svg,.log,.sql,.diff,.patch,.srt,.vtt,.ass,.ssa,.sub,.sbv,.lrc,.css,.scss,.js,.mjs,.ts,.tsx,.jsx,.py,.sh,.rb,.go,.rs,.java,.po,.pot,.env,.properties,.epub,text/plain,text/csv,text/markdown,text/html,text/xml,application/json,application/xml,application/epub+zip" multiple hidden>
         <div id="fileList" class="file-list" aria-live="polite"></div>
       </div>
     </div>
