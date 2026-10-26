@@ -32,6 +32,7 @@ No browser needed. Requires Node.js ≥ 18.
 git clone https://git.souls-like.com/fj-lotusfa/simp_trad.git
 cd simp_trad
 node cli.mjs --s2t --locale hk "软件"
+./cli.sh --s2t --locale hk "软件"  # same, via bash wrapper
 echo "软件" | node cli.mjs --s2t -l tw
 node cli.mjs --t2s -i in.txt -o out.txt
 # optional: npm link  →  simp-trad --s2t 软件
