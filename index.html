@@ -14,38 +14,7 @@
       gtag('js', new Date());
       gtag('config', 'G-X1Z1DMD4J9');
     </script>
-    <style>
-      .file-upload-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 10px;
-        margin-top: 8px;
-      }
-      .btn-file-upload, .btn-file-download {
-        display: inline-block;
-        padding: 6px 14px;
-        font-size: var(--font-sm);
-        font-weight: 500;
-        border: 1px solid var(--color-btn-border);
-        background: var(--color-btn-bg);
-        color: var(--color-text);
-        cursor: pointer;
-        font-family: inherit;
-      }
-      .btn-file-upload:hover, .btn-file-download:hover {
-        background: var(--color-btn-hover);
-      }
-      .btn-file-download:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-      .file-name {
-        font-size: var(--font-sm);
-        color: var(--color-text-muted);
-      }
-    </style>
-  </head>
+</head>
   <body>
     <div class="header">
       <div class="titles">
@@ -61,13 +30,15 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="inputText">輸入</label>
-          <textarea id="inputText" rows="10">这是一个在浏览器本地运行的简繁转换工具，无需联网即可使用。它基于 OpenCC 词典，支持简体与繁体互转，并可选择台湾或香港用语。请在此输入或粘贴要转换的文字。</textarea>
-          <div class="file-upload-row">
-            <label for="inputFile" class="btn-file-upload">Upload .txt / .md / .epub</label>
-            <input type="file" id="inputFile" accept=".txt,.text,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.log,.srt,.vtt,.epub,text/plain,application/epub+zip" style="display:none">
-            <span id="fileName" class="file-name"></span>
+          <div class="label-with-controls">
+            <label for="inputText">輸入</label>
+            <div class="output-controls">
+              <button type="button" id="uploadBtn" class="btn-icon" aria-label="Upload file" title="Upload .txt / .md / .epub"></button>
+              <input type="file" id="inputFile" accept=".txt,.text,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.log,.srt,.vtt,.epub,text/plain,application/epub+zip" hidden>
+            </div>
           </div>
+          <textarea id="inputText" rows="10">这是一个在浏览器本地运行的简繁转换工具，无需联网即可使用。它基于 OpenCC 词典，支持简体与繁体互转，并可选择台湾或香港用语。请在此输入或粘贴要转换的文字。</textarea>
+          <div id="fileName" class="file-name" style="font-size: var(--font-xs); color: var(--color-text-light); margin-top: 6px; min-height: 1.2em;"></div>
         </div>
       </div>
 
@@ -76,13 +47,12 @@
           <div class="label-with-controls">
             <label for="outputText">輸出</label>
             <div class="output-controls">
-              <button id="copyBtn" class="btn-icon" aria-label="Copy"></button>
+              <button type="button" id="copyBtn" class="btn-icon" aria-label="Copy" title="Copy"></button>
+              <span class="output-sep">•</span>
+              <button type="button" id="downloadBtn" class="btn-icon" aria-label="Download file" title="Download file" disabled></button>
             </div>
           </div>
           <textarea id="outputText" rows="10" disabled></textarea>
-          <div class="file-upload-row">
-            <button type="button" id="downloadBtn" class="btn-file-download" disabled>Download file</button>
-          </div>
         </div>
       </div>
     </div>
@@ -159,8 +129,10 @@
 
     <script src="./lib/jszip.min.js"></script>
     <script type="module">
-      import { svgLightMode, svgDarkMode, svgCopy, svgTick } from '../ipa/js/svg.js';
+      import { svgLightMode, svgDarkMode, svgCopy, svgTick, svgDownload } from '../ipa/js/svg.js';
       import OpenCC from './lib/opencc-full.js';
+      const svgUpload = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`;
+
       import {
         isEpubFile, isSupportedTextFile, suggestedDownloadName,
         convertMarkupPreservingTags, convertEpub, readPlainFile, fileExt,
@@ -275,6 +247,10 @@
       const fileInput = document.getElementById('inputFile');
       const fileNameSpan = document.getElementById('fileName');
       const downloadBtn = document.getElementById('downloadBtn');
+      const uploadBtn = document.getElementById('uploadBtn');
+      uploadBtn.innerHTML = svgUpload;
+      downloadBtn.innerHTML = svgDownload;
+      uploadBtn.addEventListener('click', () => fileInput.click());
       let downloadPayload = null; // { blob, name, kind }
       let lastEpubBuf = null;
       let lastEpubName = '';
