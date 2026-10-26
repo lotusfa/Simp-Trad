@@ -315,22 +315,6 @@
           inputText.value = direction === 's2t' ? SAMPLE_S2T : SAMPLE_T2S;
         }
         lastDirection = direction;
-        if (lastEpubBuf && typeof JSZip !== 'undefined') {
-          convertEpub(lastEpubBuf, converter, JSZip).then(({ blob, previewText, fileCount }) => {
-            inputText.value = previewText || inputText.value;
-            outputText.value = inputText.value;
-            downloadPayload = {
-              kind: 'epub',
-              blob,
-              name: suggestedDownloadName(lastEpubName || 'book.epub', direction, 'epub'),
-            };
-            fileNameSpan.textContent = `${lastEpubName} → ${downloadPayload.name} (${fileCount} files)`;
-            updateDownloadState();
-          }).catch((e) => {
-            outputText.value = 'Error: ' + e.message;
-          });
-          return;
-        }
         convertNow();
       }
 
