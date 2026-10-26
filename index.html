@@ -3,64 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>簡繁轉換</title>
-    <meta name="description" content="Offline Simplified ↔ Traditional Chinese converter. Runs entirely in your browser." />
+    <title>簡繁轉換 - Offline Simplified ↔ Traditional Chinese</title>
+    <meta name="description" content="Offline Simplified ↔ Traditional Chinese converter. Pure client-side OpenCC in your browser." />
     <link rel="stylesheet" href="../ipa/css/styles.css" />
-    <style>
-      .options-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px 28px;
-        margin: 12px 0 4px;
-        align-items: center;
-      }
-      .options-group {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px 14px;
-      }
-      .options-group > span {
-        font-size: var(--font-sm);
-        color: var(--color-text-muted);
-        margin-right: 4px;
-      }
-      .examples {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        margin: 8px 0 12px;
-      }
-      .examples-label {
-        font-size: var(--font-sm);
-        color: var(--color-text-muted);
-        margin-right: 4px;
-      }
-      .example-chip {
-        padding: 4px 10px;
-        font-size: var(--font-xs);
-        border: 1px solid var(--color-btn-border);
-        background: var(--color-btn-bg);
-        color: var(--color-text);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-      }
-      .example-chip:hover {
-        background: var(--color-btn-hover);
-      }
-      .hint {
-        font-size: var(--font-xs);
-        color: var(--color-text-light);
-        margin-top: 8px;
-      }
-    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Z1DMD4J9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-X1Z1DMD4J9');
+    </script>
   </head>
   <body>
     <div class="header">
       <div class="titles">
         <h1>簡繁轉換</h1>
-        <h2>Offline Simplified ↔ Traditional Chinese</h2>
+        <h2>Simplified ↔ Traditional Chinese</h2>
       </div>
       <button id="dark-mode-toggle" class="btn-theme" aria-label="Toggle dark mode">
         <span class="icon"></span>
@@ -68,37 +27,14 @@
     </div>
     <hr />
 
-    <div class="options-row">
-      <div class="options-group" role="radiogroup" aria-label="Direction">
-        <span>方向</span>
-        <label class="form-check-inline"><input type="radio" name="direction" value="s2t" checked /> 簡 → 繁</label>
-        <label class="form-check-inline"><input type="radio" name="direction" value="t2s" /> 繁 → 簡</label>
-      </div>
-      <div class="options-group" id="localeGroup" role="radiogroup" aria-label="Locale">
-        <span>繁體變體</span>
-        <label class="form-check-inline"><input type="radio" name="locale" value="t" checked /> OpenCC</label>
-        <label class="form-check-inline"><input type="radio" name="locale" value="tw" /> 台灣</label>
-        <label class="form-check-inline"><input type="radio" name="locale" value="twp" /> 台灣（常用詞）</label>
-        <label class="form-check-inline"><input type="radio" name="locale" value="hk" /> 香港</label>
-      </div>
-    </div>
-
-    <div class="examples" id="examples">
-      <span class="examples-label">Examples</span>
-      <button type="button" class="example-chip" data-text="汉字简化方案公布后，软件与网络用语迅速普及。">漢字／软件</button>
-      <button type="button" class="example-chip" data-text="打开鼠标设置，连接无线网络后启动服务器。">鼠标／网络</button>
-      <button type="button" class="example-chip" data-text="这个视频很火，里面有很多干货分享。">视频／干货</button>
-      <button type="button" class="example-chip" data-text="请在后台配置数据库，并检查内存与磁盘空间。">后台／数据库</button>
-      <button type="button" class="example-chip" data-text="皇后大道中有間舖頭賣軟件同滑鼠。">繁→簡試用</button>
-    </div>
-
     <div class="row">
       <div class="col">
         <div class="form-group">
           <label for="inputText">輸入</label>
-          <textarea id="inputText" rows="12" placeholder="貼上要轉換嘅文字…"></textarea>
+          <textarea id="inputText" rows="10">歡迎使用簡繁轉換！呢個工具用 OpenCC 喺瀏覽器本地做轉換，唔使上網。試吓輸入日常句子，例如「软件与网络」「打开鼠标设置」「这个视频很火」，或者撳選項轉繁→簡。喺呢度開始輸入或改寫呢段文字就得！</textarea>
         </div>
       </div>
+
       <div class="col">
         <div class="form-group">
           <div class="label-with-controls">
@@ -107,44 +43,78 @@
               <button id="copyBtn" class="btn-icon" aria-label="Copy"></button>
             </div>
           </div>
-          <textarea id="outputText" rows="12" disabled></textarea>
+          <textarea id="outputText" rows="10" disabled></textarea>
         </div>
       </div>
     </div>
-    <p class="hint">純前端 OpenCC（opencc-js），詞典已內嵌；載入後可離線使用。詞彙轉換以詞典為準，未必完美。</p>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-check-inline" style="align-items: baseline; margin-bottom: 5px;">
+          <span style="font-weight: 500; margin-right: 5px;">方向:</span>
+          <input type="radio" name="direction" id="dir_s2t" value="s2t" checked />
+          <label for="dir_s2t">簡 → 繁</label>
+        </div>
+        <div class="form-check-inline">
+          <input type="radio" name="direction" id="dir_t2s" value="t2s" />
+          <label for="dir_t2s">繁 → 簡</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="localeRow">
+      <div class="col-md-6">
+        <div class="form-check-inline" style="align-items: baseline; margin-bottom: 5px;">
+          <span style="font-weight: 500; margin-right: 5px;">繁體變體:</span>
+          <input type="radio" name="locale" id="loc_t" value="t" checked />
+          <label for="loc_t">OpenCC</label>
+        </div>
+        <div class="form-check-inline">
+          <input type="radio" name="locale" id="loc_tw" value="tw" />
+          <label for="loc_tw">台灣</label>
+        </div>
+        <div class="form-check-inline">
+          <input type="radio" name="locale" id="loc_twp" value="twp" />
+          <label for="loc_twp">台灣（常用詞）</label>
+        </div>
+        <div class="form-check-inline">
+          <input type="radio" name="locale" id="loc_hk" value="hk" />
+          <label for="loc_hk">香港</label>
+        </div>
+      </div>
+    </div>
 
     <footer class="footer">
-      <div class="footer-bottom">
-        <div class="footer-bottom-inner">
-          <p>
-            Power By: LOTUS FA,
-            <a href="https://lotusfa.com/">lotusfa.com</a>
-            · Conversion: <a href="https://github.com/BYVoid/OpenCC">OpenCC</a> /
-            <a href="https://github.com/nk2028/opencc-js">opencc-js</a>
-          </p>
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Description</h4>
+          <p>This is an open-source, offline Simplified ↔ Traditional Chinese converter. Conversion runs entirely in your browser with OpenCC dictionaries (via opencc-js)—no server round-trip after the page loads.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="https://github.com/BYVoid/OpenCC">OpenCC</a></li>
+            <li><a href="https://github.com/nk2028/opencc-js">opencc-js</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Simplified_Chinese_characters">Simplified Chinese (Wikipedia)</a></li>
+          </ul>
         </div>
       </div>
 
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-8952191733743650"
-           data-ad-slot="7418454359"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>
-           (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <p>
+            <a href="../index.html">Home</a>
+            &nbsp;|&nbsp;
+            <a href="https://git.souls-like.com/fj-lotusfa/simp_trad">GitHub</a>
+            &nbsp;|&nbsp;
+            <a href="https://me.lotusfa.com/lotusfa-v3/supportme.html" target="_blank" rel="noopener">☕ Support me</a>
+            &nbsp;|&nbsp;
+            Copyright © <a href="https://lotusfa.com/">LotusFa</a>
+          </p>
+        </div>
+      </div>
     </footer>
-
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-80492067-1', 'auto');
-      ga('send', 'pageview');
-    </script>
 
     <script type="module">
       import { svgLightMode, svgDarkMode, svgCopy, svgTick } from '../ipa/js/svg.js';
@@ -169,7 +139,7 @@
       const inputText = document.getElementById('inputText');
       const outputText = document.getElementById('outputText');
       const copyBtn = document.getElementById('copyBtn');
-      const localeGroup = document.getElementById('localeGroup');
+      const localeRow = document.getElementById('localeRow');
       let converter = null;
       let debounceTimer = null;
 
@@ -181,16 +151,16 @@
       function rebuildConverter() {
         const direction = selected('direction') || 's2t';
         const locale = selected('locale') || 't';
-        localeGroup.style.opacity = direction === 's2t' ? '1' : '0.45';
-        localeGroup.querySelectorAll('input').forEach((inp) => {
+        localeRow.style.opacity = direction === 's2t' ? '1' : '0.45';
+        localeRow.querySelectorAll('input').forEach((inp) => {
           inp.disabled = direction !== 's2t';
         });
         if (direction === 's2t') {
           converter = OpenCC.Converter({ from: 'cn', to: locale });
         } else {
-          // Prefer converting from the selected traditional locale when going T→S
-          const from = localeGroup.querySelector('input:checked')?.value || 't';
-          converter = OpenCC.Converter({ from: from === 'twp' ? 'twp' : from === 'tw' ? 'tw' : from === 'hk' ? 'hk' : 't', to: 'cn' });
+          const from = selected('locale') || 't';
+          const fromKey = from === 'twp' ? 'twp' : from === 'tw' ? 'tw' : from === 'hk' ? 'hk' : 't';
+          converter = OpenCC.Converter({ from: fromKey, to: 'cn' });
         }
         convertNow();
       }
@@ -223,24 +193,6 @@
         navigator.clipboard.writeText(text).then(() => {
           copyBtn.innerHTML = svgTick;
           setTimeout(() => { copyBtn.innerHTML = svgCopy; }, 1500);
-        });
-      });
-
-
-      document.querySelectorAll('.example-chip').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const sample = btn.getAttribute('data-text') || '';
-          inputText.value = sample;
-          // Prefer S→T for simplified samples; T→S for the traditional one
-          const isTradSample = sample.includes('皇后') || sample.includes('舖頭');
-          const dir = isTradSample ? 't2s' : 's2t';
-          const dirInput = document.querySelector(`input[name="direction"][value="${dir}"]`);
-          if (dirInput) {
-            dirInput.checked = true;
-            rebuildConverter();
-          } else {
-            convertNow();
-          }
         });
       });
 
